@@ -1,15 +1,23 @@
 package main
 
 import (
+	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"github.com/RafaelTauschek/internal/config"
+	"github.com/RafaelTauschek/internal/database"
+	"github.com/google/uuid"
+
+	_ "github.com/lib/pq"
 )
 
 type state struct {
+	db  *database.Queries
 	cfg *config.Config
 }
 
@@ -41,12 +49,44 @@ func (c *commands) run(s *state, cmd command) error {
 	return nil
 }
 
-func handlerLogin(s *state, cmd command) error {
-	if len(cmd.arguments) == 0 {
-		return errors.New("no argument provided")
+func handlerRegister(s *state, cmd command) error {
+	if len(cmd.arguments) != 1 {
+		return errors.New("no arguments provided")
 	}
 
-	err := s.cfg.SetUser(cmd.arguments[0])
+	name := cmd.arguments[0]
+
+	user, err := s.db.CreateUser(context.Background(), database.CreateUserParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name:      name,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	err = s.cfg.SetUser(user.Name)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func handlerLogin(s *state, cmd command) error {
+	if len(cmd.arguments) != 1 {
+		return errors.New("no argument provided")
+	}
+	username := cmd.arguments[0]
+
+	_, err := s.db.GetUser(context.Background(), username)
+	if err != nil {
+		return err
+	}
+
+	err = s.cfg.SetUser(username)
 	if err != nil {
 		return err
 	}
@@ -61,7 +101,16 @@ func main() {
 		log.Fatal(err)
 	}
 
+	db, err := sql.Open("postgres", cfg.DBUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	dbQueries := database.New(db)
+
 	s := &state{
+		db:  dbQueries,
 		cfg: &cfg,
 	}
 
@@ -70,10 +119,12 @@ func main() {
 	}
 
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 
 	args := os.Args
 	if len(args) < 2 {
-		log.Fatal("Not enough arguments provided")
+		fmt.Println("Not enough arguments provided")
+		return
 	}
 
 	cmdName := os.Args[1]
