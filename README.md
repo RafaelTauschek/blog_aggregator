@@ -13,6 +13,7 @@ You can then install gator with:
 
 ```bash
 go install ...
+```
 
 ## Config
 
@@ -22,6 +23,7 @@ Create a .gatorconfig.json file in your home directory with the following struct
 {
   "db_url": "postgres://username:@localhost:5432/database?sslmode=disable"
 }
+```
 
 Replace the vlaues with your database connection string
 
@@ -31,11 +33,13 @@ Create a new user:
 
 ```bash
 gator register <name>
+```
 
 Login
 
 ```bash
 gator login <name>
+```
 
 There are few other commands you'll need:
 
