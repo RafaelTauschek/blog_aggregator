@@ -18,5 +18,10 @@ func handlerReset(s *state, cmd command) error {
 		return err
 	}
 
+	err = s.db.DeletePosts(context.Background())
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
