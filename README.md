@@ -43,14 +43,14 @@ gator login <name>
 
 There are few other commands you'll need:
 
-gator reset - Resets the database
-gator users - Lists all users
-gator agg <duration> - Start the aggregation
-gator addfeed <feed_name> <url> - Adds a feed
-gator feeds - Lists all feeds
-gator follow <url> - Follow a exsisting feed
-gator following - Lists all feeds the logged in user follows
-gator unfollow <url> - Unfollows a feed
-gator browse <limit> - Lists all posts
+- gator reset - Resets the database
+- gator users - Lists all users
+- gator agg <duration> - Start the aggregation
+- gator addfeed <feed_name> <url> - Adds a feed
+- gator feeds - Lists all feeds
+- gator follow <url> - Follow a exsisting feed
+- gator following - Lists all feeds the logged in user follows
+- gator unfollow <url> - Unfollows a feed
+- gator browse <limit> - Lists all posts
 
 
